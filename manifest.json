@@ -1,0 +1,37 @@
+{
+  "updated_utc": "2026-10-06T09:13:06Z",
+  "owner": "jwarrenrzflynn",
+  "repo": "zakatv-cfg",
+  "branch": "main",
+  "links": {
+    "ZakaTV.json": {
+      "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
+      "bytes": 54192
+    },
+    "ZakaTV.raw.json": {
+      "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
+      "bytes": 54154
+    },
+    "ZakaTV.jsdelivr.json": {
+      "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/",
+      "bytes": 54142
+    }
+  },
+  "assets": {
+    "files/ai-zhineng.jar": {
+      "md5": "3e08e2edbb704a2d5fc81e21971a9594",
+      "bytes": 1246499
+    },
+    "files/ai-zhineng.png": {
+      "md5": "3e08e2edbb704a2d5fc81e21971a9594",
+      "bytes": 1246499
+    }
+  },
+  "config": {
+    "sites": 130,
+    "lives": 7,
+    "parses": 13,
+    "md5": "5083c1586012378082745654100006af"
+  },
+  "seed_source": "本地最新线上版 (CF 当前限流, 无法在线校验)"
+}

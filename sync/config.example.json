@@ -1,0 +1,8 @@
+{
+  "_说明": "复制成 config.json 填自己的值。config.json 不要提交到仓库。",
+  "token": "YOUR_GITHUB_TOKEN",
+  "owner": "jwarrenrzflynn",
+  "repo": "zakatv-cfg",
+  "branch": "main",
+  "interval_minutes": 15
+}
