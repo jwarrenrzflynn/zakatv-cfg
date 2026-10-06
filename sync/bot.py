@@ -88,7 +88,8 @@ def http_get(url, timeout=30, ua=None, maxbytes=None):
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             data = r.read() if maxbytes is None else r.read(maxbytes)
-            return r.status, data
+            # file:// 这类源没有 status,读成功即视为 200
+            return (getattr(r, "status", None) or 200), data
     except urllib.error.HTTPError as e:
         body = b""
         try:
@@ -282,6 +283,21 @@ def push(cfg, files, changed, message):
     return True, newc["sha"][:8]
 
 
+def purge_jsdelivr(cfg, paths):
+    """jsDelivr 的 @branch 别名带缓存,推完必须主动刷,否则客户端拿到的还是旧版。
+    (实测:推完 @main 仍旧,用 commit sha 才是新的;purge 接口刷完即生效。)"""
+    ok = []
+    for p in paths:
+        u = f"https://purge.jsdelivr.net/gh/{cfg['owner']}/{cfg['repo']}@{cfg['branch']}/{p}"
+        st, body = http_get(u, cfg["timeout"], maxbytes=4096)
+        if st == 200:
+            ok.append(p)
+        else:
+            log(f"   jsDelivr 刷新失败 {p} HTTP {st}")
+    if ok:
+        log(f"   jsDelivr 缓存已刷新: {', '.join(ok)}")
+
+
 # ---------------------------------------------------------------- 一轮
 
 def one_round(cfg, dry=False):
@@ -328,9 +344,20 @@ def one_round(cfg, dry=False):
     ok, info = push(cfg, files, changed, msg)
     if ok:
         log(f"   ✅ 已推送 {len(changed)} 个文件 -> {info}  ({', '.join(changed)})")
+        purge_jsdelivr(cfg, changed)
         return "pushed", f"{len(changed)} 个文件 -> {info}"
     log(f"   ❌ 推送失败: {info}")
     return "error", info
+
+
+def probe_git(cfg):
+    """开机自检:确认能连上 GitHub 且令牌可用。连不上就直接说清楚,别等推送时才发现。"""
+    st, info = gh(cfg, "GET", f"/repos/{cfg['owner']}/{cfg['repo']}")
+    if st == 200:
+        log(f"   git 通道 OK: {info.get('full_name')} (private={info.get('private')})")
+        return True
+    log(f"   ⚠️ git 通道异常 HTTP {st}: {str(info)[:160]}")
+    return False
 
 
 def main():
@@ -352,12 +379,14 @@ def main():
     interval = max(1, int(cfg["interval_minutes"])) * 60
     log(f"同步机器人启动: {cfg['owner']}/{cfg['repo']}@{cfg['branch']},"
         f"间隔 {cfg['interval_minutes']} 分钟")
+    probe_git(cfg)
     fails = 0
     while True:
         try:
             st, msg = one_round(cfg)
             log(f"   结果: {st} / {msg}")
-            fails = 0 if st in ("pushed", "nochange") else fails + 1
+            # cf_down/partial 是限流期的正常状态,按常规间隔继续探,不进退避
+            fails = 0 if st in ("pushed", "nochange", "cf_down", "partial") else fails + 1
         except Exception as e:
             fails += 1
             log(f"   异常: {type(e).__name__}: {e}")
