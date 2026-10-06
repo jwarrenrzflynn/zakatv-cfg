@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-06T09:17:56Z",
+  "updated_utc": "2026-10-06T09:21:23Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
@@ -8,11 +8,15 @@
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
       "bytes": 54192
     },
+    "ZakaTV.ghproxy.json": {
+      "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
+      "bytes": 54196
+    },
     "ZakaTV.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
       "bytes": 54154
     },
-    "ZakaTV.jsdelivr.json": {
+    "ZakaTV.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/",
       "bytes": 54142
     }

@@ -6,18 +6,19 @@
 
 | 口径 | 地址 |
 |---|---|
-| ① 国内加速代理（推荐） | `https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.json` |
-| ② 官方直连 | `https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.raw.json` |
-| ③ jsDelivr CDN | `https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.jsdelivr.json` |
+| ① ghfast 加速（推荐） | `https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.json` |
+| ② gh-proxy 加速 | `https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.ghproxy.json` |
+| ③ 官方直连 | `https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.raw.json` |
+| ④ jsDelivr CDN | `https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.cdn.json` |
 
-> 三条地址对应三个**不同文件**，不是同一个文件换前缀——每条线里的爬虫包地址跟它自己走的通道一致，
+> 四条地址对应四个**不同文件**，不是同一个文件换前缀——每条线里的爬虫包地址跟它自己走的通道一致，
 > 避免"走 jsDelivr 拉配置、包却要绕 ghfast"这种半吊子状态。
 
 > 换线后记得在壳里**清缓存再重载配置**。
 
-**关于 ③ jsDelivr 的缓存**：它的 `@main` 是个带缓存的别名（服务端最长 12 小时才重解析一次），
-刚推送完的一段时间里它可能还在发旧版本。机器人每次推完都会主动调 purge 接口刷缓存，
-但边缘生效有延迟。**日常请用 ① / ②**；③ 当第三条退路。
+**关于 jsDelivr 的缓存**：它按「文件」缓存（实测 `@main` 的**提交解析是新的**，卡住的只是单个文件的缓存）。
+所以本仓库给它的文件名带通道标记（`ZakaTV.cdn.json`），并且机器人每次推完会主动调 purge 接口刷新。
+真遇到它发旧版，换个入口或等缓存过期即可 —— **日常用 ① / ② 最稳**。
 
 ## 二、为什么叫"自洽"
 
@@ -34,7 +35,8 @@ CF 一挂客户端还是废。所以本仓库做了两件事：
 ```
 ZakaTV.json            备用主配置（ghfast 代理口径，推荐）
 ZakaTV.raw.json        备用主配置（raw.githubusercontent 直连口径）
-ZakaTV.jsdelivr.json   备用主配置（jsDelivr CDN 口径）
+ZakaTV.ghproxy.json    备用主配置（gh-proxy 口径）
+ZakaTV.cdn.json        备用主配置（jsDelivr 口径）
 ZakaTV.origin.json     站方原始配置，仅作对照，资源仍指向 CF
 files/ai-zhineng.jar   爬虫包原件（与主站同字节）
 files/ai-zhineng.png   同字节，保留站方原文件名形态

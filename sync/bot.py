@@ -46,12 +46,17 @@ DEFAULTS = {
     ],
     # (文件名, 镜像前缀, 爬虫包在该通道的可用形态)
     # jsDelivr 屏蔽 .jar 后缀,所以那条线用同字节的 .png 形态
+    # (文件名, 镜像前缀, 爬虫包在该通道的可用形态)
+    # jsDelivr 屏蔽 .jar 后缀,所以那条线用同字节的 .png 形态
+    # 文件名带通道名:jsDelivr 按文件缓存,换名可绕开历史缓存
     "mirrors": [
         {"file": "ZakaTV.json", "prefix": "https://ghfast.top/https://raw.githubusercontent.com/{o}/{r}/{b}/",
          "asset": "files/ai-zhineng.jar"},
+        {"file": "ZakaTV.ghproxy.json", "prefix": "https://gh-proxy.com/https://raw.githubusercontent.com/{o}/{r}/{b}/",
+         "asset": "files/ai-zhineng.jar"},
         {"file": "ZakaTV.raw.json", "prefix": "https://raw.githubusercontent.com/{o}/{r}/{b}/",
          "asset": "files/ai-zhineng.jar"},
-        {"file": "ZakaTV.jsdelivr.json", "prefix": "https://cdn.jsdelivr.net/gh/{o}/{r}@{b}/",
+        {"file": "ZakaTV.cdn.json", "prefix": "https://cdn.jsdelivr.net/gh/{o}/{r}@{b}/",
          "asset": "files/ai-zhineng.png"},
     ],
     "interval_minutes": 15,

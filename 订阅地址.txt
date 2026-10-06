@@ -1,18 +1,21 @@
 ZakaTV 备用配置线 — 订阅地址
 ==============================================
 
-① 国内加速代理(推荐)
+① ghfast 加速(推荐)
     https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.json
 
-② 官方直连
+② gh-proxy 加速
+    https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.ghproxy.json
+
+③ 官方直连
     https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.raw.json
 
-③ jsDelivr CDN
-    https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.jsdelivr.json
+④ jsDelivr CDN
+    https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.cdn.json
 
 说明
 ----
 · CF 主站(tv.ystv.top)限流/打不开时,把上面任一条粘到 TVBox 的订阅地址即可。
 · 备用线里爬虫包已指向本仓库(files/ai-zhineng.jar),md5 校验值 3e08e2edbb704a2d5fc81e21971a9594,与主站同一字节。
 · 客户端记得清缓存再重载配置。
-· 自动更新时间(UTC): 2026-10-06T09:17:56Z
+· 自动更新时间(UTC): 2026-10-06T09:21:23Z
