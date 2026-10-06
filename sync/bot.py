@@ -44,10 +44,15 @@ DEFAULTS = {
         "https://admin.ystv.top/files/ai-zhineng.png",
         "https://ztv2.ystv.top/files/ai-zhineng.png",
     ],
+    # (文件名, 镜像前缀, 爬虫包在该通道的可用形态)
+    # jsDelivr 屏蔽 .jar 后缀,所以那条线用同字节的 .png 形态
     "mirrors": [
-        {"file": "ZakaTV.json", "prefix": "https://ghfast.top/https://raw.githubusercontent.com/{o}/{r}/{b}/"},
-        {"file": "ZakaTV.raw.json", "prefix": "https://raw.githubusercontent.com/{o}/{r}/{b}/"},
-        {"file": "ZakaTV.jsdelivr.json", "prefix": "https://cdn.jsdelivr.net/gh/{o}/{r}@{b}/"},
+        {"file": "ZakaTV.json", "prefix": "https://ghfast.top/https://raw.githubusercontent.com/{o}/{r}/{b}/",
+         "asset": "files/ai-zhineng.jar"},
+        {"file": "ZakaTV.raw.json", "prefix": "https://raw.githubusercontent.com/{o}/{r}/{b}/",
+         "asset": "files/ai-zhineng.jar"},
+        {"file": "ZakaTV.jsdelivr.json", "prefix": "https://cdn.jsdelivr.net/gh/{o}/{r}@{b}/",
+         "asset": "files/ai-zhineng.png"},
     ],
     "interval_minutes": 15,
     "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36",
@@ -160,9 +165,9 @@ def fetch_jar(cfg, want_md5=None):
 
 # ---------------------------------------------------------------- 造包
 
-def rewrite(cfg, raw_cfg, jar_md5, prefix):
+def rewrite(cfg, raw_cfg, jar_md5, prefix, asset="files/ai-zhineng.jar"):
     obj = json.loads(raw_cfg.decode("utf-8"))
-    obj["spider"] = f"{prefix}files/ai-zhineng.jar;md5;{jar_md5}"
+    obj["spider"] = f"{prefix}{asset};md5;{jar_md5}"
 
     def walk(n):
         if isinstance(n, dict):
@@ -187,7 +192,8 @@ def build_files(cfg, raw_cfg, jar):
     files = {}
     for mir in cfg["mirrors"]:
         prefix = mir["prefix"].format(o=cfg["owner"], r=cfg["repo"], b=cfg["branch"])
-        files[mir["file"]] = rewrite(cfg, raw_cfg, jar_md5, prefix)
+        files[mir["file"]] = rewrite(cfg, raw_cfg, jar_md5, prefix,
+                                     mir.get("asset", "files/ai-zhineng.jar"))
     files["ZakaTV.origin.json"] = raw_cfg
     files["files/ai-zhineng.jar"] = jar
     files["files/ai-zhineng.png"] = jar
