@@ -22,10 +22,10 @@
 
 ## 二、为什么叫"自洽"
 
-主站配置里的爬虫包指向 `tv.ystv.top/files/ai-zhineng.png`——只搬 json 不搬包，
+主站配置里的爬虫包指向 `tv506.ystv.top/files/ai-zhineng.png`——只搬 json 不搬包，
 CF 一挂客户端还是废。所以本仓库做了两件事：
 
-1. **爬虫包入仓**：`files/ai-zhineng.jar`，与主站逐字节相同（md5 `3e08e2edbb704a2d5fc81e21971a9594`）。
+1. **爬虫包入仓**：`files/ai-zhineng.jar`，与主站逐字节相同（md5 `e067b87cbb06868782141db307415feb`）。
 2. **引用整体改写**：备用配置里的 `spider` 以及所有指向站方 `/files/` 的资源，全部换成 git 地址。
 
 结果：CF 全站 429 的时候，备用线照样能拉配置、能下包。

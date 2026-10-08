@@ -1,41 +1,41 @@
 {
-  "updated_utc": "2026-10-07T23:40:37Z",
+  "updated_utc": "2026-10-08T08:07:03Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
   "links": {
     "ZakaTV.json": {
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 54192
+      "bytes": 54219
     },
     "ZakaTV.ghproxy.json": {
       "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 54196
+      "bytes": 54223
     },
     "ZakaTV.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 54154
+      "bytes": 54181
     },
     "ZakaTV.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/",
-      "bytes": 54142
+      "bytes": 54169
     }
   },
   "assets": {
     "files/ai-zhineng.jar": {
-      "md5": "7a5ce1fce3f244ca7b2730c669454aeb",
-      "bytes": 1250478
+      "md5": "e067b87cbb06868782141db307415feb",
+      "bytes": 1250587
     },
     "files/ai-zhineng.png": {
-      "md5": "7a5ce1fce3f244ca7b2730c669454aeb",
-      "bytes": 1250478
+      "md5": "e067b87cbb06868782141db307415feb",
+      "bytes": 1250587
     }
   },
   "config": {
     "sites": 130,
     "lives": 7,
     "parses": 13,
-    "md5": "15b08ca3cfe42f055594e45323fc4aac"
+    "md5": "7e67a6c378eda4d327875720f27a3bc1"
   },
   "seed_source": "本地最新线上版 (CF 当前限流, 无法在线校验)"
 }
