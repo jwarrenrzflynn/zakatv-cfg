@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-11T00:00:47Z",
+  "updated_utc": "2026-10-11T13:04:56Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
@@ -23,19 +23,19 @@
   },
   "assets": {
     "files/ai-zhineng.jar": {
-      "md5": "1258ed4043bd439bb46c5b758a5798c8",
-      "bytes": 1237023
+      "md5": "afbe976e46aa1d505f7c1b8fdf10c051",
+      "bytes": 1237199
     },
     "files/ai-zhineng.png": {
-      "md5": "1258ed4043bd439bb46c5b758a5798c8",
-      "bytes": 1237023
+      "md5": "afbe976e46aa1d505f7c1b8fdf10c051",
+      "bytes": 1237199
     }
   },
   "config": {
     "sites": 129,
     "lives": 7,
     "parses": 13,
-    "md5": "95e23f03877ad90633c6d60b03b2e16d"
+    "md5": "5a2059256fcedb83866b74517a585236"
   },
   "seed_source": "本地最新线上版 (CF 当前限流, 无法在线校验)"
 }
