@@ -1,57 +1,57 @@
 {
-  "updated_utc": "2026-10-13T03:47:38Z",
+  "updated_utc": "2026-10-13T03:58:34Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
   "links": {
     "ZakaTV.json": {
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 171433
+      "bytes": 171280
     },
     "ZakaTV.full.json": {
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 219136
+      "bytes": 218983
     },
     "ZakaTV.ghproxy.json": {
       "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 171437
+      "bytes": 171284
     },
     "ZakaTV.full.ghproxy.json": {
       "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 220504
+      "bytes": 220351
     },
     "ZakaTV.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 171395
+      "bytes": 171242
     },
     "ZakaTV.full.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 206140
+      "bytes": 205987
     },
     "ZakaTV.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/",
-      "bytes": 171383
+      "bytes": 171230
     },
     "ZakaTV.full.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/files/py/",
-      "bytes": 202036
+      "bytes": 201883
     }
   },
   "assets": {
     "files/ai-zhineng.jar": {
-      "md5": "eb277fa33615519d04c07d1e35c6515d",
-      "bytes": 1238097
+      "md5": "35c7e5ca1ba211dc5cece698ab6e24d6",
+      "bytes": 1226388
     },
     "files/ai-zhineng.png": {
-      "md5": "eb277fa33615519d04c07d1e35c6515d",
-      "bytes": 1238097
+      "md5": "35c7e5ca1ba211dc5cece698ab6e24d6",
+      "bytes": 1226388
     }
   },
   "config": {
-    "sites": 808,
+    "sites": 807,
     "lives": 7,
     "parses": 13,
-    "md5": "48654f648872b02600b63c6f0639d98f"
+    "md5": "a0e587cec2b5137b1f0e9729278a69c3"
   },
   "py_mirror": {
     "files": 680,
