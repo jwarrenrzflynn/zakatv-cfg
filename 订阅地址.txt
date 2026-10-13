@@ -1,6 +1,8 @@
 ZakaTV 备用配置线 — 订阅地址
 ==============================================
 
+【A 组 · 常规线】配置与爬虫包走 git,py 插件源仍走 py805.ystv.top
+----------------------------------------------
 ① ghfast 加速(推荐)
     https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.json
 
@@ -13,9 +15,25 @@ ZakaTV 备用配置线 — 订阅地址
 ④ jsDelivr CDN
     https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.cdn.json
 
+【B 组 · 全自闭环线】配置 + 爬虫包 + py 插件源 全部走 git,不依赖任何 CF 域
+                      (CF 全线不通 / ystv.top 全打不开时用这组)
+----------------------------------------------
+① ghfast 加速(推荐)
+    https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.full.json
+
+② gh-proxy 加速
+    https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.full.ghproxy.json
+
+③ 官方直连
+    https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/ZakaTV.full.raw.json
+
+④ jsDelivr CDN
+    https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/ZakaTV.full.cdn.json
+
 说明
 ----
 · CF 主站(tv506.ystv.top)限流/打不开时,把上面任一条粘到 TVBox 的订阅地址即可。
-· 备用线里爬虫包已指向本仓库(files/ai-zhineng.jar),md5 校验值 eb277fa33615519d04c07d1e35c6515d,与主站同一字节。
+· 爬虫包已指向本仓库(files/ai-zhineng.jar),md5 校验值 eb277fa33615519d04c07d1e35c6515d,与主站同一字节。
+· py 插件源 680 个已镜像进本仓库(files/py/),B 组配置里全部指向本仓库。
 · 客户端记得清缓存再重载配置。
-· 自动更新时间(UTC): 2026-10-13T03:43:29Z
+· 自动更新时间(UTC): 2026-10-13T03:47:38Z
