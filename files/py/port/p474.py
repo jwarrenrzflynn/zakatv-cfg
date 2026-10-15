@@ -1,302 +1,320 @@
 # -*- coding: utf-8 -*-
-"""
-══════════════════════════════════════════════════════════════════
-Pektino Video Spider for TVBox / 影视仓
-官方交流频道/群组: https://t.me/+3t5XRPPo9mlkZDRl
-══════════════════════════════════════════════════════════════════
-"""
-import re
+import base64
+import html
+import http.client
 import json
-from urllib import parse
-from bs4 import BeautifulSoup
-import requests
+import re
+import ssl
+import time
+import urllib.parse
+import urllib.request
+from urllib.parse import unquote, urljoin, urlparse
 
 try:
-    from base.spider import Spider as SpiderBase
-except ImportError:
-    class SpiderBase:
+    from base.spider import Spider as BaseSpider
+except Exception:
+    class BaseSpider(object):
         pass
 
-class Spider(SpiderBase):
-    def __init__(self):
-        super().__init__()
-        self.siteUrl = "https://pektino.com"
-        self.session = requests.Session()
-        self.ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
-        self.channel_url = "https://t.me/+3t5XRPPo9mlkZDRl"
-        
-        # 广告、导流与占位过滤关键词
-        self.ad_keywords = [
-            "telegram", "tg频道", "tg群", "电报", "チャンネル", 
-            "お気に入り", "favorite", "qrcode", "二维码", "推广", 
-            "广告", "赞助", "官方群", "交流群", "关注"
-        ]
+HOST = "https://pektino.com"
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-    def _is_ad(self, title: str, href: str, pic: str) -> bool:
-        """过滤广告与无效占位卡片"""
-        combined = f"{title} {href} {pic}".lower()
-        if any(kw in combined for kw in self.ad_keywords):
-            return True
-        if "t.me/" in href or "telegram.me/" in href:
-            return True
-        return False
+CATEGORIES = [
+    {"type_id": "daily", "type_name": "每日精选"},
+    {"type_id": "weekly", "type_name": "每周热门"},
+    {"type_id": "monthly", "type_name": "每月排行"},
+    {"type_id": "all", "type_name": "历史最佳"},
+]
 
-    def _build_headers(self, is_ajax: bool = False, extra: dict = None) -> dict:
-        h = {
-            "User-Agent": self.ua,
-            "Accept": "*/*" if is_ajax else "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Referer": f"{self.siteUrl}/",
-        }
-        if is_ajax:
-            h["HX-Request"] = "true"
-            h["HX-Target"] = "main"
-            h["HX-Current-URL"] = f"{self.siteUrl}/zh-CN"
-        if extra:
-            h.update(extra)
-        return h
 
-    def _fetch(self, url: str, is_ajax: bool = False) -> str:
-        try:
-            h = self._build_headers(is_ajax=is_ajax)
-            resp = self.session.get(url, headers=h, timeout=12, allow_redirects=True)
-            resp.encoding = getattr(resp, "apparent_encoding", None) or "utf-8"
-            return resp.text
-        except Exception:
-            return ""
+class Spider(BaseSpider):
 
-    def _fix_url(self, url: str) -> str:
-        if not url:
-            return ""
-        if url.startswith("http"):
-            return url
-        if url.startswith("//"):
-            return f"https:{url}"
-        if url.startswith("/"):
-            return f"{self.siteUrl.rstrip('/')}{url}"
-        return f"{self.siteUrl.rstrip('/')}/{url}"
-
-    def _clean_title(self, title: str) -> str:
-        import html as _html
-        t = _html.unescape(title or "")
-        t = re.sub(r"<[^>]+>", "", t)
-        return t.strip()
+    def getName(self):
+        return "pektino"
 
     def init(self, extend=""):
-        return True
+        pass
 
-    def isVideoFormat(self, url):
-        return any(ext in url.lower() for ext in [".m3u8", ".mp4", ".ts", ".flv", ".mov"])
+    def _req(self, url, retry=3, timeout=12, referer=None):
+        headers = {
+            "User-Agent": UA,
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Referer": referer if referer else (HOST + "/zh-CN"),
+        }
+        for i in range(retry):
+            try:
+                ctx = ssl.create_default_context()
+                ctx.check_hostname = False
+                ctx.verify_mode = ssl.CERT_NONE
+
+                req_obj = urllib.request.Request(url, headers=headers)
+                with urllib.request.urlopen(req_obj, timeout=timeout, context=ctx) as resp:
+                    data = resp.read()
+                    real_url = resp.geturl()
+                    for enc in ["utf-8", "gbk", "gb2312", "latin-1"]:
+                        try:
+                            return resp.getcode(), real_url, data.decode(enc)
+                        except Exception:
+                            continue
+                    return resp.getcode(), real_url, data.decode("utf-8", errors="ignore")
+            except urllib.error.HTTPError as he:
+                return he.code, url, ""
+            except Exception:
+                if i < retry - 1:
+                    time.sleep(0.3)
+                else:
+                    return 0, url, ""
+        return 0, url, ""
+
+    def _translate_auto(self, text):
+        if not text:
+            return ""
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        try:
+            yd_url = "https://aidemo.youdao.com/trans"
+            data_bytes = urllib.parse.urlencode({
+                "q": text,
+                "from": "Auto",
+                "to": "zh-CHS"
+            }).encode("utf-8")
+            req_obj = urllib.request.Request(yd_url, data=data_bytes, headers={
+                "User-Agent": UA,
+                "Content-Type": "application/x-www-form-urlencoded"
+            })
+            with urllib.request.urlopen(req_obj, timeout=2.5, context=ctx) as resp:
+                res_data = json.loads(resp.read().decode("utf-8"))
+                trans_result = res_data.get("translation")
+                if trans_result and isinstance(trans_result, list) and len(trans_result) > 0:
+                    return trans_result[0].strip()
+        except Exception:
+            pass
+
+        try:
+            q = urllib.parse.quote(text)
+            gg_url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=zh-CN&dt=t&q=%s" % q
+            req_obj2 = urllib.request.Request(gg_url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req_obj2, timeout=2.0, context=ctx) as resp2:
+                data = json.loads(resp2.read().decode("utf-8"))
+                translated = "".join([part[0] for part in data[0] if part[0]])
+                if translated.strip():
+                    return translated.strip()
+        except Exception:
+            pass
+
+        return text
+
+    def _convert_pic_proxy(self, pic_url):
+        if not pic_url:
+            return ""
+        if pic_url.startswith("//"):
+            pic_url = "https:" + pic_url
+        if "twimg.com" in pic_url:
+            return "https://wsrv.nl/?url=%s" % urllib.parse.quote(pic_url)
+        return pic_url
+
+    def _parse_cards(self, html_text):
+        items = []
+        if not html_text:
+            return items
+
+        anchor_pattern = r'(<a[^>]+href="[^"]*(?:/zh-CN)?/movie/[^"]+"[^>]*>.*?</a>)'
+        matches = re.findall(anchor_pattern, html_text, re.DOTALL | re.IGNORECASE)
+
+        seen_ids = set()
+        for block in matches:
+            href_m = re.search(r'href="([^"]*(?:/zh-CN)?/movie/([^"/]+)/?)"', block)
+            if not href_m:
+                continue
+
+            v_url = href_m.group(1)
+            vid = href_m.group(2)
+            if vid in seen_ids:
+                continue
+            seen_ids.add(vid)
+
+            img_m = re.search(r'(?:src|data-src|poster)="([^"]+)"', block, re.IGNORECASE)
+            pic = self._convert_pic_proxy(img_m.group(1)) if img_m else ""
+
+            dur_m = re.search(r'(\d+:\d+(?::\d+)?)', block)
+            dur = dur_m.group(1) if dur_m else ""
+
+            alt_m = re.search(r'alt="([^"]+)"', block)
+            if alt_m:
+                raw_title = alt_m.group(1).replace("X (Twitter) adult video ", "").strip()
+            else:
+                raw_title = vid
+
+            title = "精选影片 " + vid if raw_title == vid else raw_title
+            remarks = ("ZakaTV | %s" % dur) if dur else "ZakaTV"
+
+            items.append({
+                "vod_id": vid,
+                "vod_name": title,
+                "vod_pic": pic,
+                "vod_remarks": remarks,
+                "vod_pic_style": "1.78",
+                "vod_card_style": "rect",
+                "style": {"type": "rect", "ratio": 1.78}
+            })
+
+        return items
+
+    def homeContent(self, filter):
+        return {
+            "class": CATEGORIES,
+            "list": [],
+            "class_flag": 0,
+            "style": {"type": "rect", "ratio": 1.78}
+        }
+
+    def homeVideoContent(self):
+        code, real_url, html_text = self._req("%s/zh-CN" % HOST)
+        return {
+            "list": self._parse_cards(html_text),
+            "style": {"type": "rect", "ratio": 1.78}
+        }
+
+    def categoryContent(self, tid, pg="1", filter=False, extend=None):
+        p = int(pg) if str(pg).isdigit() else 1
+        clean_tid = tid.strip("/")
+
+        if clean_tid == "daily":
+            target_url = "%s/zh-CN" % HOST
+        else:
+            target_url = "%s/zh-CN/%s" % (HOST, clean_tid)
+
+        if p > 1:
+            target_url = "%s?page=%s" % (target_url, p)
+
+        code, real_url, html_text = self._req(target_url)
+        items = self._parse_cards(html_text)
+
+        return {
+            "list": items,
+            "page": p,
+            "pagecount": 999,
+            "limit": 50,
+            "total": 9999,
+            "class_flag": 0,
+            "style": {"type": "rect", "ratio": 1.78}
+        }
+
+    def detailContent(self, ids):
+        if not ids:
+            return {"list": []}
+
+        vid = str(ids[0]).strip()
+        target_url = ("%s/zh-CN/movie/%s" % (HOST, vid)) if not vid.startswith("http") else vid
+
+        code, real_url, html_text = self._req(target_url)
+
+        title = ""
+        t_m = re.search(r'<title>([^<]+)</title>', html_text)
+        if t_m:
+            title = t_m.group(1).split(" - ")[0].strip()
+
+        pic = ""
+        pic_m = re.search(r'property="og:image"\s+content="([^"]+)"', html_text)
+        if pic_m:
+            pic = self._convert_pic_proxy(pic_m.group(1))
+
+        desc = ""
+        desc_m = re.search(r'name="description"\s+content="([^"]+)"', html_text)
+        if desc_m:
+            desc = desc_m.group(1).strip()
+
+        clean_text = html_text.replace(r'\/', '/').replace('\\"', '"').replace('\\\\', '\\')
+        raw_mp4s = re.findall(r'(https?://video\.twimg\.com/[^"\'\s<>\\]+\.mp4(?:\?[^"\'\s<>\\]*)?)', clean_text)
+        
+        valid_streams = []
+        for u in raw_mp4s:
+            clean_u = u.replace('\\', '').strip()
+            if clean_u.startswith("http") and clean_u not in valid_streams:
+                valid_streams.append(clean_u)
+
+        video_stream_url = ""
+        for u in valid_streams:
+            if vid in u:
+                video_stream_url = u
+                break
+        if not video_stream_url and valid_streams:
+            video_stream_url = valid_streams[0]
+
+        qualities = []
+        if video_stream_url:
+            qualities.append(("超清直链", video_stream_url))
+        else:
+            qualities.append(("网页解析", target_url))
+
+        play_url = "#".join(["%s$%s" % (q[0], q[1]) for q in qualities])
+        zh_title = self._translate_auto(title)
+        display_title = zh_title if zh_title else title
+        notice_desc = "📺ZakaTV 独家呈现\n官方交流群: https://t.me/+3t5XRPPo9mlkZDRl\n原名: %s\n%s" % (title, desc)
+
+        vod = {
+            "vod_id": vid,
+            "vod_name": html.unescape(display_title),
+            "vod_pic": pic,
+            "vod_year": "",
+            "vod_area": "",
+            "vod_actor": "📺TG群: https://t.me/+3t5XRPPo9mlkZDRl",
+            "vod_director": "📺ZakaTV",
+            "vod_content": notice_desc,
+            "vod_remarks": "ZakaTV",
+            "vod_play_from": "ZakaTV",
+            "vod_play_url": play_url,
+        }
+        return {"list": [vod]}
+
+    def playerContent(self, flag, id, vipFlags):
+        headers = {
+            "User-Agent": UA,
+            "Referer": "https://twitter.com/"
+        }
+        return {
+            "parse": 0,
+            "playUrl": "",
+            "url": id,
+            "header": json.dumps(headers)
+        }
+
+    def searchContent(self, key, quick=False, pg="1"):
+        p = int(pg) if str(pg).isdigit() else 1
+        kw = urllib.parse.quote(key)
+        url = "%s/zh-CN/search?tag=%s" % (HOST, kw)
+        if p > 1:
+            url = "%s&page=%s" % (url, p)
+
+        code, real_url, html_text = self._req(url)
+        return {
+            "list": self._parse_cards(html_text),
+            "page": p,
+            "pagecount": 999,
+            "limit": 24,
+            "total": 9999,
+            "class_flag": 0,
+            "style": {"type": "rect", "ratio": 1.78}
+        }
+
+    def localProxy(self, params):
+        return [200, "text/plain; charset=utf-8", b"", None]
+
+    def action(self, action):
+        return {}
+
+    def liveContent(self):
+        return {}
 
     def manualVideoCheck(self):
         return False
 
-    # ───── 1. 首页分类 ─────
-    def homeContent(self, filter=False):
-        return {
-            "class": [
-                {"type_name": "🔥 每天", "type_id": "/zh-CN"},
-                {"type_name": "📅 每周", "type_id": "/zh-CN/weekly"},
-                {"type_name": "📈 每月", "type_id": "/zh-CN/monthly"},
-                {"type_name": "⏳ 控球时间", "type_id": "/zh-CN/duration"},
-            ]
-        }
+    def isVideoFormat(self, url):
+        return False
 
-    # ───── 2. 分类列表 ─────
-    def categoryContent(self, tid, pg, filter=False, extend=None):
-        base_url = self._fix_url(tid)
-        
-        if int(pg) > 1:
-            sep = "&" if "?" in base_url else "?"
-            url = f"{base_url}{sep}page={pg}"
-        else:
-            url = base_url
-
-        html = self._fetch(url, is_ajax=True)
-        if not html or len(html) < 200:
-            html = self._fetch(url, is_ajax=False)
-
-        if not html or ("404" in html[:300] and "/zh-CN/" in base_url):
-            tab_name = base_url.split("/")[-1]
-            fallback_url = f"{self.siteUrl}/zh-CN?tab={tab_name}"
-            if int(pg) > 1:
-                fallback_url += f"&page={pg}"
-            html = self._fetch(fallback_url, is_ajax=False)
-
-        videos = []
-        seen = set()
-
-        # 优先解析 Next.js 数据
-        if "__NEXT_DATA__" in html:
-            try:
-                m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', html, re.S)
-                if m:
-                    jdata = json.loads(m.group(1))
-                    page_props = jdata.get("props", {}).get("pageProps", {})
-                    items = page_props.get("videos") or page_props.get("list") or page_props.get("posts") or []
-                    for it in items:
-                        vid = it.get("id") or it.get("slug")
-                        if not vid:
-                            continue
-                        vurl = f"/zh-CN/post/{vid}" if not str(vid).startswith("/") else str(vid)
-                        if vurl in seen:
-                            continue
-
-                        title = self._clean_title(it.get("title") or it.get("text") or "精选推文")
-                        pic = self._fix_url(it.get("cover") or it.get("thumb") or it.get("poster") or "")
-
-                        if self._is_ad(title, vurl, pic):
-                            continue
-
-                        seen.add(vurl)
-                        videos.append({
-                            "vod_id": vurl,
-                            "vod_name": title,
-                            "vod_pic": pic,
-                            "vod_remarks": "推文"
-                        })
-            except Exception:
-                pass
-
-        # 页面 DOM 兜底解析
-        if not videos:
-            soup = BeautifulSoup(html, "html.parser")
-            for a in soup.select("a[href*='/post/'], a[href*='/video/'], a[href*='/watch/'], .video-card a, .card a, a:has(img)"):
-                href = a.get("href", "")
-                if not href or href in seen or href in ["/", "/zh-CN", "/zh-CN/weekly", "/zh-CN/monthly", "/zh-CN/duration"]:
-                    continue
-                
-                if not re.search(r'/(?:post|video|watch|[a-zA-Z0-9_-]{6,})', href):
-                    continue
-
-                img = a.find("img")
-                title = self._clean_title(a.get("title") or (img.get("alt", "") if img else "") or a.get_text(strip=True))
-                pic = ""
-                if img:
-                    pic = self._fix_url(img.get("data-src") or img.get("data-original") or img.get("src", "") or "")
-
-                if self._is_ad(title, href, pic):
-                    continue
-
-                seen.add(href)
-                videos.append({
-                    "vod_id": href,
-                    "vod_name": title[:60] if title else "精彩视频",
-                    "vod_pic": pic,
-                    "vod_remarks": "推文"
-                })
-
-        return {
-            "list": videos,
-            "page": int(pg),
-            "pagecount": 999 if len(videos) >= 6 else int(pg),
-            "limit": len(videos),
-            "total": 9999
-        }
-
-    # ───── 3. 详情页 ─────
-    def detailContent(self, ids):
-        vod_id = ids[0]
-        url = self._fix_url(vod_id)
-        html = self._fetch(url, is_ajax=False)
-        soup = BeautifulSoup(html, "html.parser")
-
-        title_node = soup.select_one("h1, h2, .title, meta[property='og:title']")
-        if title_node:
-            title = title_node.get("content") if title_node.name == "meta" else title_node.get_text(strip=True)
-        else:
-            title = "视频播放"
-
-        pic_node = soup.select_one("meta[property='og:image'], video[poster], img.poster, img.cover")
-        pic = ""
-        if pic_node:
-            pic = pic_node.get("content") or pic_node.get("poster") or pic_node.get("src", "")
-
-        return {
-            "list": [{
-                "vod_id": vod_id,
-                "vod_name": self._clean_title(title),
-                "vod_pic": self._fix_url(pic),
-                "vod_content": f"交流频道: {self.channel_url}",
-                "vod_play_from": "官方直连",
-                "vod_play_url": f"点击播放${url}"
-            }]
-        }
-
-    # ───── 4. 播放地址解析 ─────
-    def playerContent(self, flag, id, vipFlags):
-        url = self._fix_url(id)
-        play_header = f"User-Agent={self.ua}&Referer={self.siteUrl}/"
-
-        if self.isVideoFormat(url):
-            return {
-                "parse": 0,
-                "url": url,
-                "header": play_header
-            }
-
-        html = self._fetch(url, is_ajax=False)
-
-        # 1. 抓取 Twitter 视频源 (video.twimg.com / mp4 / m3u8)
-        tw_match = re.search(r'(https?://[^"\',\\s]*video\.twimg\.com[^"\',\\s]*\.(?:mp4|m3u8)[^"\',\\s]*)', html)
-        if tw_match:
-            real_url = tw_match.group(1).replace("\\/", "/")
-            return {
-                "parse": 0,
-                "url": real_url,
-                "header": play_header
-            }
-
-        # 2. 匹配 video 标签
-        video_match = re.search(r'<(?:video|source)[^>]+src=["\']([^"\']+)["\']', html)
-        if video_match:
-            real_url = self._fix_url(video_match.group(1))
-            return {
-                "parse": 0,
-                "url": real_url,
-                "header": play_header
-            }
-
-        # 3. 匹配通用 mp4/m3u8 直链正则
-        media_match = re.search(r'(https?://[^"\s\',]+\.(?:mp4|m3u8)[^"\s\',]*)', html)
-        if media_match:
-            real_url = media_match.group(1).replace("\\/", "/")
-            return {
-                "parse": 0,
-                "url": real_url,
-                "header": play_header
-            }
-
-        # 4. 嗅探兜底
-        return {
-            "parse": 1,
-            "url": url,
-            "header": play_header
-        }
-
-    # ───── 5. 搜索 ─────
-    def searchContent(self, key, quick, pg="1"):
-        search_url = f"{self.siteUrl}/zh-CN/search?q={parse.quote(key)}"
-        html = self._fetch(search_url, is_ajax=True)
-        soup = BeautifulSoup(html, "html.parser")
-        videos = []
-        for a in soup.select("a[href*='/post/'], a[href*='/video/'], .card a"):
-            href = a.get("href", "")
-            img = a.find("img")
-            title = self._clean_title(a.get("title") or (img.get("alt", "") if img else "") or a.get_text(strip=True))
-            pic = self._fix_url(img.get("src", "") if img else "")
-            
-            if not href or not title or self._is_ad(title, href, pic):
-                continue
-                
-            videos.append({
-                "vod_id": href,
-                "vod_name": title,
-                "vod_pic": pic,
-                "vod_remarks": "搜索结果"
-            })
-        return {"list": videos}
-
-    # ───── 6. 本地代理 ─────
-    def localProxy(self, param):
-        return [404, "text/plain", "Not supported"]
+    def destroy(self):
+        pass
