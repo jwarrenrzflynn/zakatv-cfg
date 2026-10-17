@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 import sys
 import json
 import time
@@ -20,7 +22,7 @@ except Exception:
 class Spider(BaseSpider):
     def __init__(self):
         super(Spider, self).__init__()
-        self.site_url = "https://honeypeach.cc"
+        self.site_url = "https://mitaoline.com"
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36",
             "Accept": "application/json, text/plain, */*",
@@ -193,10 +195,12 @@ class Spider(BaseSpider):
         classes = [
             {"type_id": "video", "type_name": "蜜桃视频"},
             {"type_id": "duanju", "type_name": "蜜桃短剧"},
+            {"type_id": "hongtao", "type_name": "红桃短剧"},
             {"type_id": "caibian", "type_name": "擦边短剧"},
             {"type_id": "shortv", "type_name": "蜜桃动漫"},
             {"type_id": "guochan", "type_name": "国产精品"},
             {"type_id": "heiliao", "type_name": "黑料吃瓜"},
+            {"type_id": "hbo", "type_name": "HBO精选"},
             {"type_id": "live", "type_name": "蜜桃直播"}
         ]
 
@@ -231,22 +235,65 @@ class Spider(BaseSpider):
             "duanju": [
                 {
                     "key": "cat",
-                    "name": "板块",
+                    "name": "厂牌分类",
                     "value": [
-                        {"n": "精选", "v": "all"},
+                        {"n": "黄桃短剧", "v": "huangtao"},
+                        {"n": "黄果短剧", "v": "huangguo"},
+                        {"n": "野果短剧", "v": "yeguo"},
+                        {"n": "橙果短剧", "v": "chengguo"},
+                        {"n": "一直看短剧", "v": "yizk"},
+                        {"n": "黄豆短剧", "v": "huangdou"},
                         {"n": "赤果短剧", "v": "chiguo"},
-                        {"n": "魔改短剧", "v": "mod"},
-                        {"n": "黄豆原创", "v": "yuandou"},
-                        {"n": "真人短剧", "v": "zhenren"},
+                        {"n": "怦然心动", "v": "pengran"},
                         {"n": "动漫", "v": "erciyuan"},
-                        {"n": "影院", "v": "aiman"},
-                        {"n": "推荐", "v": "tuijian"},
-                        {"n": "AI成人短剧", "v": "duanju"},
-                        {"n": "AI成人漫剧", "v": "manju"},
-                        {"n": "AI换脸", "v": "huanlian"},
-                        {"n": "AI魔改", "v": "mogai"},
-                        {"n": "排行榜", "v": "rank"},
-                        {"n": "怦然心动", "v": "pengran"}
+                        {"n": "金币专区", "v": "jinbi"},
+                        {"n": "会员专区", "v": "huiyuan"}
+                    ]
+                },
+                {
+                    "key": "sub",
+                    "name": "二级筛选",
+                    "value": [
+                        {"n": "全部/精选/推荐", "v": "0"},
+                        {"n": "子类1(AI短剧/野果原创/黄豆原创/热门好剧/国漫)", "v": "1"},
+                        {"n": "子类2(AI漫剧/真人短剧/UP原创/民国风月/日漫)", "v": "2"},
+                        {"n": "子类3(魔改漫剧/大神精选/悬疑惊悚/动画同人)", "v": "3"},
+                        {"n": "子类4(网红改编/单体作品/同人魔改/游戏同人)", "v": "4"},
+                        {"n": "子类5(影视魔改/古典风月/排行榜)", "v": "5"},
+                        {"n": "子类6(国漫AI/都市艳遇)", "v": "6"},
+                        {"n": "子类7(魔改短剧/恋爱情感)", "v": "7"},
+                        {"n": "子类8(爆爽逆袭)", "v": "8"},
+                        {"n": "子类9(职场沉浮)", "v": "9"},
+                        {"n": "子类10(家庭伦理)", "v": "10"},
+                        {"n": "子类11(奇幻修仙)", "v": "11"}
+                    ]
+                }
+            ],
+            "hongtao": [
+                {
+                    "key": "cat",
+                    "name": "频道",
+                    "value": [
+                        {"n": "红桃原创", "v": "zhenren"},
+                        {"n": "甜宠言情", "v": "tc"},
+                        {"n": "逆袭爽剧", "v": "nx"},
+                        {"n": "古装传奇", "v": "gz"},
+                        {"n": "都市生活", "v": "ds"},
+                        {"n": "玄幻奇幻", "v": "xh"},
+                        {"n": "悬疑热血", "v": "xy"},
+                        {"n": "正经漫剧", "v": "manju"},
+                        {"n": "未分类短剧", "v": "unclassified"}
+                    ]
+                },
+                {
+                    "key": "sub",
+                    "name": "题材(原创专享)",
+                    "value": [
+                        {"n": "都市", "v": "0"},
+                        {"n": "古装", "v": "1"},
+                        {"n": "民国", "v": "2"},
+                        {"n": "重生", "v": "3"},
+                        {"n": "异能", "v": "4"}
                     ]
                 }
             ],
@@ -283,6 +330,16 @@ class Spider(BaseSpider):
                     ]
                 }
             ],
+            "hbo": [
+                {
+                    "key": "cat",
+                    "name": "剧集类型",
+                    "value": [
+                        {"n": "美剧", "v": "meiju"},
+                        {"n": "韩剧", "v": "hanju"}
+                    ]
+                }
+            ],
             "live": [
                 {
                     "key": "cat",
@@ -312,36 +369,89 @@ class Spider(BaseSpider):
     def categoryContent(self, tid, pg, filter, extend):
         page = int(pg) if pg else 1
         cat = extend.get("cat", "")
+        sub = extend.get("sub", "")
         
         src_map = {
-            "video": "missav",
-            "shortv": "dongman",
+            "huangtao": "duoju86",
+            "huangguo": "huangguo",
+            "yeguo": "duoju86",
+            "chengguo": "duoju86",
+            "yizk": "duoju86",
+            "huangdou": "huangdou",
             "chiguo": "chiguo",
             "pengran": "pengran",
-            "tuijian": "huangguo",
-            "duanju": "huangguo",
-            "manju": "huangguo",
-            "huanlian": "huangguo",
-            "mogai": "huangguo",
-            "rank": "huangguo"
+            "erciyuan": "huangdou",
+            "jinbi": "huangdou",
+            "huiyuan": "huangdou",
+            "zhenren": "huangdou",
+            "tc": "duoju89",
+            "nx": "duoju89",
+            "gz": "duoju89",
+            "ds": "duoju89",
+            "xh": "duoju89",
+            "xy": "duoju89",
+            "manju": "huangdou",
+            "unclassified": "duoju89",
+            "meiju": "huangdou",
+            "hanju": "huangdou"
         }
-        
-        src = src_map.get(cat, src_map.get(tid, "huangdou"))
-        if tid == "guochan":
-            src = "guochan"
 
         params = {
             "key": tid,
             "page": page
         }
-        if cat:
-            params["cat"] = cat
-        if src:
+
+        src = "huangdou"
+        if tid == "duanju":
+            cat_val = cat if cat else "huangtao"
+            src = src_map.get(cat_val, "duoju86")
+            params["cat"] = cat_val
             params["src"] = src
-        if extend.get("sub"):
-            params["sub"] = extend.get("sub")
-        if extend.get("nav"):
-            params["nav"] = extend.get("nav")
+            if sub:
+                params["sub"] = int(sub) if str(sub).isdigit() else sub
+            else:
+                params["sub"] = 0
+        elif tid == "hongtao":
+            cat_val = cat if cat else "zhenren"
+            src = src_map.get(cat_val, "huangdou")
+            params["cat"] = cat_val
+            params["src"] = src
+            if cat_val == "zhenren":
+                params["sub"] = int(sub) if str(sub).isdigit() else 0
+            else:
+                params["sub"] = 0
+        elif tid == "hbo":
+            cat_val = cat if cat else "meiju"
+            src = "huangdou"
+            params["cat"] = cat_val
+            params["src"] = src
+            params["sub"] = 0
+        elif tid == "caibian":
+            cat_val = cat if cat else "0"
+            src = "huangdou"
+            params["cat"] = cat_val
+            params["src"] = src
+            params["nav"] = "caibian"
+            params["sub"] = int(cat_val) if str(cat_val).isdigit() else 0
+        elif tid == "guochan":
+            src = "guochan"
+            params["src"] = src
+        elif tid == "video":
+            src = "missav"
+            params["src"] = src
+            if cat:
+                params["cat"] = cat
+        elif tid == "shortv":
+            src = "dongman"
+            params["src"] = src
+            if cat:
+                params["cat"] = cat
+        else:
+            if cat:
+                params["cat"] = cat
+            if extend.get("src"):
+                src = extend.get("src")
+                params["src"] = src
 
         res = self._signed_fetch("/api/module", params=params, timeout=10)
         
@@ -356,7 +466,7 @@ class Spider(BaseSpider):
             if has_more:
                 pagecount = page + 1
             
-            cover_mod = src if tid == "duanju" else tid
+            cover_mod = src if tid in ("duanju", "hongtao", "hbo") else tid
             for item in raw_list:
                 item_id = str(item.get("id") or item.get("code") or "")
                 if not item_id:
@@ -368,9 +478,9 @@ class Spider(BaseSpider):
                 
                 raw_remark = item.get("remark") or item.get("desc") or ""
                 if raw_remark:
-                    remarks = "ZakaTV | %s" % raw_remark.strip()
+                    remarks = "📺ZakaTV · %s" % raw_remark.strip()
                 else:
-                    remarks = "ZakaTV"
+                    remarks = "📺ZakaTV"
                 
                 card = {
                     "vod_id": "%s@@%s@@%s" % (tid, item_id, src),
@@ -409,9 +519,12 @@ class Spider(BaseSpider):
             "vod_id": vod_id,
             "vod_name": real_id,
             "vod_pic": "",
+            "vod_bg": "",
+            "vod_background": "",
+            "vod_banner": "",
             "vod_year": "",
             "vod_area": "蜜桃",
-            "vod_remarks": "ZakaTV",
+            "vod_remarks": "📺ZakaTV",
             "vod_actor": "📺TG群: https://t.me/+3t5XRPPo9mlkZDRl",
             "vod_director": "📺ZakaTV",
             "vod_content": "📺ZakaTV提醒：本影片仅供测试交流，请勿用于非法用途！",
@@ -427,9 +540,13 @@ class Spider(BaseSpider):
                 title = det.get("title") or real_id
                 vod["vod_name"] = str(title).strip()
                 
-                cover_mod = src if mod == "duanju" else mod
+                cover_mod = src if mod in ("duanju", "hongtao", "hbo") else mod
                 cover_raw = det.get("cover") or ""
-                vod["vod_pic"] = self._format_cover(cover_mod, cover_raw)
+                pic_url = self._format_cover(cover_mod, cover_raw)
+                vod["vod_pic"] = pic_url
+                vod["vod_bg"] = pic_url
+                vod["vod_background"] = pic_url
+                vod["vod_banner"] = pic_url
                 
                 if det.get("date"):
                     vod["vod_year"] = str(det["date"])
@@ -497,6 +614,12 @@ class Spider(BaseSpider):
         except Exception:
             pass
 
+        if final_url:
+            lower_url = final_url.lower()
+            if ".m3u8" not in lower_url and ".mp4" not in lower_url and ".mpd" not in lower_url:
+                sep = "&" if "?" in final_url else "?"
+                final_url = final_url + sep + "format=.m3u8"
+
         headers = {
             "User-Agent": self.headers["User-Agent"],
             "Referer": "https://honeypeach.cc/"
@@ -513,7 +636,7 @@ class Spider(BaseSpider):
 
     def searchContent(self, key, quick, pg="1"):
         page = int(pg) if pg else 1
-        search_mods = ["video", "duanju", "shortv", "guochan", "caibian"]
+        search_mods = ["video", "duanju", "hongtao", "hbo", "shortv", "guochan", "caibian"]
         
         cards = []
         for mod in search_mods:
@@ -534,13 +657,13 @@ class Spider(BaseSpider):
                     item_src = str(item.get("src") or mod)
                     title = str(item.get("title") or item_id).strip()
                     cover_url = item.get("cover_n") or item.get("cover") or ""
-                    pic = self._format_cover(item_src if mod == "duanju" else mod, cover_url)
+                    pic = self._format_cover(item_src if mod in ("duanju", "hongtao", "hbo") else mod, cover_url)
                     
                     raw_remark = item.get("remark") or item.get("desc") or ""
                     if raw_remark:
-                        remarks = "ZakaTV | %s" % raw_remark.strip()
+                        remarks = "📺ZakaTV · %s" % raw_remark.strip()
                     else:
-                        remarks = "ZakaTV"
+                        remarks = "📺ZakaTV"
                     
                     card = {
                         "vod_id": "%s@@%s@@%s" % (mod, item_id, item_src),

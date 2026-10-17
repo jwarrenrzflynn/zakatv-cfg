@@ -1,63 +1,63 @@
 {
-  "updated_utc": "2026-10-15T22:44:50Z",
+  "updated_utc": "2026-10-17T17:10:02Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
   "links": {
     "ZakaTV.json": {
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 174535
+      "bytes": 176502
     },
     "ZakaTV.full.json": {
       "mirror": "https://ghfast.top/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 222378
+      "bytes": 224415
     },
     "ZakaTV.ghproxy.json": {
       "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 174539
+      "bytes": 176506
     },
     "ZakaTV.full.ghproxy.json": {
       "mirror": "https://gh-proxy.com/https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 223750
+      "bytes": 225789
     },
     "ZakaTV.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/",
-      "bytes": 174497
+      "bytes": 176464
     },
     "ZakaTV.full.raw.json": {
       "mirror": "https://raw.githubusercontent.com/jwarrenrzflynn/zakatv-cfg/main/files/py/",
-      "bytes": 209344
+      "bytes": 211362
     },
     "ZakaTV.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/",
-      "bytes": 174485
+      "bytes": 176452
     },
     "ZakaTV.full.cdn.json": {
       "mirror": "https://cdn.jsdelivr.net/gh/jwarrenrzflynn/zakatv-cfg@main/files/py/",
-      "bytes": 205228
+      "bytes": 207240
     }
   },
   "assets": {
     "files/ai-zhineng.jar": {
-      "md5": "9ffe1cfc35e849251fb048629a0e1722",
-      "bytes": 1233534
+      "md5": "ae7893165cc2c7e11a4438382ddef09f",
+      "bytes": 1243044
     },
     "files/ai-zhineng.png": {
-      "md5": "9ffe1cfc35e849251fb048629a0e1722",
-      "bytes": 1233534
+      "md5": "ae7893165cc2c7e11a4438382ddef09f",
+      "bytes": 1243044
     }
   },
   "config": {
-    "sites": 811,
+    "sites": 813,
     "lives": 7,
     "parses": 13,
-    "md5": "3949cf158ed1d3eb6ccb84c6c08b1a6d"
+    "md5": "472cf10abc66ff8519741939143072ea"
   },
   "py_mirror": {
-    "files": 683,
-    "bytes": 14664946,
+    "files": 692,
+    "bytes": 14801672,
     "dir": "files/py/",
-    "patched_sites_per_full_cfg": 681,
+    "patched_sites_per_full_cfg": 682,
     "note": "full 系列配置里的 py 插件源指向本仓库,不再依赖 CF 域"
   },
   "seed_source": "本地最新线上版 (CF 当前限流, 无法在线校验)"
