@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-10-17T17:10:02Z",
+  "updated_utc": "2026-10-18T23:52:30Z",
   "owner": "jwarrenrzflynn",
   "repo": "zakatv-cfg",
   "branch": "main",
@@ -39,19 +39,19 @@
   },
   "assets": {
     "files/ai-zhineng.jar": {
-      "md5": "ae7893165cc2c7e11a4438382ddef09f",
-      "bytes": 1243044
+      "md5": "2d2a3aef84c4c1845511af0f2cbe96b3",
+      "bytes": 1250264
     },
     "files/ai-zhineng.png": {
-      "md5": "ae7893165cc2c7e11a4438382ddef09f",
-      "bytes": 1243044
+      "md5": "2d2a3aef84c4c1845511af0f2cbe96b3",
+      "bytes": 1250264
     }
   },
   "config": {
     "sites": 813,
     "lives": 7,
     "parses": 13,
-    "md5": "472cf10abc66ff8519741939143072ea"
+    "md5": "882a03334ff3287e23af4ba9ada12d16"
   },
   "py_mirror": {
     "files": 692,
